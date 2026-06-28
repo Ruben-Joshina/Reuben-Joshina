@@ -11,65 +11,45 @@ if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --cream:        #F7F0E6;
-  --cream-dark:   #EDE3D4;
-  --cream-deeper: #E4D5BE;
-  --gold:         #B8966E;
-  --gold-light:   #D4B896;
-  --gold-dark:    #8A6A44;
-  --bronze:       #7A5C38;
-  --ivory:        #FBF7F0;
-  --warm-white:   #FEFCF8;
-  --text:         #2C1F10;
-  --text-mid:     #5C4530;
-  --text-soft:    #8A7060;
-  --blush:        #F0E4D4;
+  --cream:#F7F0E6;--cream-dark:#EDE3D4;--cream-deeper:#E4D5BE;
+  --gold:#B8966E;--gold-light:#D4B896;--gold-dark:#8A6A44;
+  --bronze:#7A5C38;--ivory:#FBF7F0;--warm-white:#FEFCF8;
+  --text:#2C1F10;--text-mid:#5C4530;--text-soft:#8A7060;--blush:#F0E4D4;
 }
 html{scroll-behavior:smooth}
 body{font-family:'EB Garamond',serif;background:var(--cream);color:var(--text);overflow-x:hidden;}
 
-/* ── MUSIC PLAYER BAR ── */
-#music-bar{
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;
-  display:flex;align-items:center;gap:0.75rem;
-  background:rgba(254,252,248,0.96);
-  border:1px solid rgba(184,150,110,0.3);
-  padding:0.6rem 1.1rem 0.6rem 0.85rem;
-  box-shadow:0 4px 28px rgba(184,150,110,0.22);
-  backdrop-filter:blur(12px);
+/* ── PETAL CANVAS ── */
+#petal-canvas{
+  position:fixed;inset:0;pointer-events:none;z-index:300;
+  width:100%;height:100%;overflow:hidden;
 }
-#music-bar::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(to right,var(--gold-light),var(--gold),var(--gold-light));
+.petal{
+  position:absolute;top:-60px;
+  pointer-events:none;
+  animation:petalFall linear infinite;
+  will-change:transform,opacity;
 }
-#music-toggle{
-  width:36px;height:36px;border-radius:50%;
-  background:var(--gold);border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--ivory);font-size:0.9rem;
-  transition:background 0.2s,transform 0.15s;flex-shrink:0;
+@keyframes petalFall{
+  0%  {transform:translateY(0) rotate(0deg) scale(1);   opacity:0;}
+  5%  {opacity:1;}
+  90% {opacity:0.7;}
+  100%{transform:translateY(110vh) rotate(720deg) scale(0.7); opacity:0;}
 }
+@keyframes petalSway{
+  0%,100%{margin-left:0}
+  25%    {margin-left:28px}
+  75%    {margin-left:-28px}
+}
+
+/* ── MUSIC BAR ── */
+#music-bar{position:fixed;bottom:1.5rem;right:1.5rem;z-index:500;display:flex;align-items:center;gap:0.75rem;background:rgba(254,252,248,0.96);border:1px solid rgba(184,150,110,0.3);padding:0.6rem 1.1rem 0.6rem 0.85rem;box-shadow:0 4px 28px rgba(184,150,110,0.22);backdrop-filter:blur(12px);}
+#music-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--gold-light),var(--gold),var(--gold-light));}
+#music-toggle{width:36px;height:36px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ivory);font-size:0.9rem;transition:background 0.2s,transform 0.15s;flex-shrink:0;}
 #music-toggle:hover{background:var(--gold-dark);transform:scale(1.08)}
 #music-label{font-family:'Cinzel',serif;font-size:0.55rem;letter-spacing:0.18em;color:var(--text-soft);text-transform:uppercase;white-space:nowrap;}
 .music-note{font-size:0.75rem;color:var(--gold-light);animation:noteFloat 2s ease-in-out infinite;display:inline-block;}
 @keyframes noteFloat{0%,100%{transform:translateY(0);opacity:0.6}50%{transform:translateY(-4px);opacity:1}}
-
-/* Autoplay overlay */
-#autoplay-overlay{
-  display:none;position:fixed;inset:0;z-index:600;
-  background:rgba(44,31,16,0.82);backdrop-filter:blur(4px);
-  align-items:center;justify-content:center;flex-direction:column;
-  gap:1.2rem;text-align:center;padding:2rem;
-}
-#autoplay-overlay.show{display:flex}
-#autoplay-overlay h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;font-style:italic;color:#F7F0E6;}
-#autoplay-overlay p{font-family:'EB Garamond',serif;font-size:1rem;color:#D4B896;max-width:320px;line-height:1.7;}
-#play-now-btn{
-  font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;
-  background:var(--gold);color:var(--ivory);border:none;
-  padding:0.9rem 2.4rem;cursor:pointer;transition:background 0.2s;margin-top:0.5rem;
-}
-#play-now-btn:hover{background:var(--gold-dark)}
 
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:400;display:flex;justify-content:center;align-items:center;gap:3rem;padding:1rem 2rem;background:rgba(247,240,230,0.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(184,150,110,0.18);}
@@ -94,18 +74,14 @@ nav a:hover{color:var(--gold-dark)}
 .hero-names em{font-style:italic;color:var(--gold-dark);font-weight:300;}
 .hero-amp{font-size:0.55em;font-style:italic;color:var(--gold);display:inline-block;margin:0 0.15em;}
 .hero-divider{display:flex;align-items:center;justify-content:center;gap:10px;margin:1.8rem auto;opacity:0;animation:fadeIn 1s 0.9s ease forwards;}
-.hdl{width:70px;height:1px;background:linear-gradient(to right,transparent,var(--gold))}
-.hdl.r{background:linear-gradient(to left,transparent,var(--gold))}
-.hdd{width:5px;height:5px;background:var(--gold);transform:rotate(45deg)}
-.hds{width:3px;height:3px;background:rgba(184,150,110,0.5);transform:rotate(45deg)}
+.hdl{width:70px;height:1px;background:linear-gradient(to right,transparent,var(--gold))}.hdl.r{background:linear-gradient(to left,transparent,var(--gold))}
+.hdd{width:5px;height:5px;background:var(--gold);transform:rotate(45deg)}.hds{width:3px;height:3px;background:rgba(184,150,110,0.5);transform:rotate(45deg)}
 .hero-verse{max-width:440px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.08rem;color:var(--text-mid);line-height:1.75;margin:0 auto 0.6rem;opacity:0;animation:fadeUp 0.9s 1.05s ease forwards;}
 .hero-verse cite{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.15em;color:var(--gold);margin-top:0.5rem;}
 .hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;opacity:0;animation:fadeUp 0.9s 1.2s ease forwards;}
 .btn{font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;padding:0.85rem 2.2rem;text-decoration:none;transition:all 0.25s;}
-.btn-primary{background:var(--gold);color:var(--ivory);border:1px solid var(--gold)}
-.btn-primary:hover{background:var(--gold-dark);border-color:var(--gold-dark)}
-.btn-outline{background:transparent;color:var(--gold-dark);border:1px solid rgba(184,150,110,0.5)}
-.btn-outline:hover{background:var(--cream-dark);border-color:var(--gold)}
+.btn-primary{background:var(--gold);color:var(--ivory);border:1px solid var(--gold)}.btn-primary:hover{background:var(--gold-dark);border-color:var(--gold-dark)}
+.btn-outline{background:transparent;color:var(--gold-dark);border:1px solid rgba(184,150,110,0.5)}.btn-outline:hover{background:var(--cream-dark);border-color:var(--gold)}
 
 /* ── INVITATION ── */
 #invitation{padding:7rem 2rem;background:linear-gradient(180deg,var(--cream) 0%,var(--warm-white) 50%,var(--cream-dark) 100%);}
@@ -146,7 +122,6 @@ nav a:hover{color:var(--gold-dark)}
 .story-box{background:var(--warm-white);border:1px solid rgba(184,150,110,0.22);padding:3.5rem 4rem;text-align:center;position:relative;box-shadow:0 8px 48px rgba(184,150,110,0.12);}
 .story-box::before,.story-box::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--gold-light),var(--gold),var(--gold-light),transparent);}
 .story-box::before{top:0}.story-box::after{bottom:0}
-.story-box .story-inner-border{position:absolute;inset:12px;border:1px solid rgba(184,150,110,0.1);pointer-events:none;}
 .story-ornament{display:flex;align-items:center;gap:14px;margin-bottom:2rem;}
 .so-line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(184,150,110,0.4))}
 .so-line:last-child{background:linear-gradient(to left,transparent,rgba(184,150,110,0.4))}
@@ -185,8 +160,8 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 </head>
 <body>
 
-<!-- AUTOPLAY OVERLAY (shown only when browser blocks autoplay) -->
-
+<!-- FALLING PETALS CONTAINER -->
+<div id="petal-canvas" aria-hidden="true"></div>
 
 <!-- NAV -->
 <nav>
@@ -296,7 +271,7 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
         <p>Love found us when we least expected it, but looking back, it feels as though our hearts had known all along.</p>
         <p>Four years ago, we met as colleagues, never imagining that a simple workplace friendship would one day become the love story of our lives. What started with shared shifts soon became coffee breaks, chai breaks, food adventures, endless conversations, and countless moments of laughter. Somewhere along the way, spending time together became the best part of our day.</p>
         <p>As our friendship grew, so did our place in each other's lives. We became each other's comfort, biggest cheerleaders, and the person we could always count on. Then life took us in different directions. Miles apart and living in different corners of the world, we could have drifted away. Instead, we grew closer. Through endless video calls, late-night conversations, and simply being there for each other when the world was asleep, distance only strengthened what we shared.</p>
-        <p>There was no single moment when love arrived. It grew quietly through friendship, trust, and the comfort of knowing we had found home in each other. Looking back, it feels as though love had been there all along; in every coffee break, every chai break, every shared meal, every laugh, and every conversation that brought us closer.</p>
+        <p>There was no single moment when love arrived. It grew quietly through friendship, trust, and the comfort of knowing we had found home in each other. Looking back, it feels as though love had been there all along — in every coffee break, every chai break, every shared meal, every laugh, and every conversation that brought us closer.</p>
         <p>Today, as we begin this new chapter, we do so with hearts full of gratitude.</p>
         <p>Because after all these years, the most beautiful part of our story remains the same: before we fell in love, we were best friends.</p>
       </div>
@@ -316,10 +291,8 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   <p class="footer-tagline">We invite you to be part of our special day</p>
 </footer>
 
-<!-- MUSIC (src must match the filename you place alongside this HTML) -->
+<!-- MUSIC -->
 <audio id="weddingAudio" src="m1.mpeg" loop preload="auto"></audio>
-
-<!-- FLOATING MUSIC PLAYER -->
 <div id="music-bar">
   <button id="music-toggle" title="Toggle music" aria-label="Toggle music">▶</button>
   <div>
@@ -329,65 +302,185 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 </div>
 
 <script>
-window.scrollTo(0, 0);
-if (window.location.hash) {
-  history.replaceState(null, '', window.location.pathname + window.location.search);
-}
+window.scrollTo(0,0);
+if(window.location.hash){history.replaceState(null,'',window.location.pathname+window.location.search);}
+
+/* ── FALLING PETALS ── */
+(function(){
+  var canvas = document.getElementById('petal-canvas');
+  var W = window.innerWidth;
+
+  // Petal shapes — SVG paths for a soft rose petal feel
+  var petalSVGs = [
+    // Oval teardrop petal
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28"><ellipse cx="10" cy="14" rx="8" ry="13" fill="FILL" opacity="OPAC"/></svg>',
+    // Rounded diamond petal
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 26"><path d="M11 1 Q20 13 11 25 Q2 13 11 1Z" fill="FILL" opacity="OPAC"/></svg>',
+    // Wide soft petal
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 20"><ellipse cx="14" cy="10" rx="13" ry="8" fill="FILL" opacity="OPAC" transform="rotate(-15 14 10)"/></svg>',
+    // Small 5-petal flower
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2 Q14 8 12 12 Q10 8 12 2Z" fill="FILL" opacity="OPAC"/><path d="M12 2 Q14 8 12 12 Q10 8 12 2Z" fill="FILL" opacity="OPAC" transform="rotate(72 12 12)"/><path d="M12 2 Q14 8 12 12 Q10 8 12 2Z" fill="FILL" opacity="OPAC" transform="rotate(144 12 12)"/><path d="M12 2 Q14 8 12 12 Q10 8 12 2Z" fill="FILL" opacity="OPAC" transform="rotate(216 12 12)"/><path d="M12 2 Q14 8 12 12 Q10 8 12 2Z" fill="FILL" opacity="OPAC" transform="rotate(288 12 12)"/></svg>',
+  ];
+
+  // Colour palette matching the photo: blush, champagne gold, soft rose, warm cream
+  var colours = [
+    '#E8C5BE', // soft blush rose
+    '#D4AFA8', // deeper blush
+    '#F2DDD8', // pale petal pink
+    '#C9A88A', // champagne gold
+    '#E0C9B8', // warm cream petal
+    '#DEB8B0', // dusty rose
+    '#F0E0D8', // lightest blush
+    '#C8A890', // warm gold-blush
+  ];
+
+  var COUNT = 22; // number of petals on screen at once
+
+  function rand(min,max){return Math.random()*(max-min)+min;}
+  function randInt(min,max){return Math.floor(rand(min,max+1));}
+
+  function createPetal(){
+    var el = document.createElement('div');
+    el.className = 'petal';
+
+    var size   = rand(14, 30);       // px
+    var left   = rand(0, 100);       // vw %
+    var dur    = rand(8, 18);        // seconds to fall
+    var delay  = rand(0, dur);       // stagger start
+    var colour = colours[randInt(0, colours.length-1)];
+    var opac   = rand(0.35, 0.7).toFixed(2);
+    var shape  = petalSVGs[randInt(0, petalSVGs.length-1)];
+    var sway   = rand(20, 50);       // px horizontal sway
+
+    var svgStr = shape.replace('FILL', colour).replace('OPAC', opac);
+    var blob   = new Blob([svgStr],{type:'image/svg+xml'});
+    var url    = URL.createObjectURL(blob);
+
+    var img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = [
+      'width:'+size+'px',
+      'height:'+size+'px',
+      'display:block',
+      'filter:blur(0.3px)',
+    ].join(';');
+
+    el.style.cssText = [
+      'left:'+left+'vw',
+      'animation-duration:'+dur+'s',
+      'animation-delay:-'+delay+'s',     // negative delay = already mid-fall on load
+      'animation-timing-function:linear',
+    ].join(';');
+
+    // Inline sway keyframe via style element (simpler than JS Web Animations)
+    el.style.animation = 'petalFall '+dur+'s -'+delay+'s linear infinite';
+
+    // Horizontal sway via a wrapper transform oscillation baked into translate
+    el.appendChild(img);
+    canvas.appendChild(el);
+
+    // After blob URL used, clean it up on first animation iteration
+    img.onload = function(){ URL.revokeObjectURL(url); };
+  }
+
+  // Use CSS animation with sine-wave left drift per petal using translateX
+  // Inject a unique keyframe per petal for the sway
+  var styleEl = document.createElement('style');
+  document.head.appendChild(styleEl);
+  var sheet = styleEl.sheet;
+
+  function createSwayPetal(i){
+    var sway = rand(15,45);
+    var kfName = 'pf'+i;
+    var size   = rand(14,30);
+    var left   = rand(0,100);
+    var dur    = rand(9,20);
+    var delay  = rand(0,dur);
+    var colour = colours[randInt(0,colours.length-1)];
+    var opac   = rand(0.30,0.65).toFixed(2);
+    var shape  = petalSVGs[randInt(0,petalSVGs.length-1)];
+    var rotEnd = rand(180,900);
+    var scaleEnd = rand(0.6,0.9).toFixed(2);
+
+    // unique keyframe
+    var kf = '@keyframes '+kfName+'{'
+      +'0%{transform:translateX(0) translateY(0) rotate(0deg) scale(1);opacity:0;}'
+      +'4%{opacity:'+opac+';}'
+      +'30%{transform:translateX('+sway+'px) translateY(30vh) rotate('+(rotEnd*0.3)+'deg) scale(1);}'
+      +'60%{transform:translateX(-'+(sway*0.7)+'px) translateY(60vh) rotate('+(rotEnd*0.6)+'deg) scale('+scaleEnd+');opacity:'+opac+';}'
+      +'85%{opacity:'+(opac*0.6).toFixed(2)+';}'
+      +'100%{transform:translateX('+(sway*0.4)+'px) translateY(108vh) rotate('+rotEnd+'deg) scale('+scaleEnd+');opacity:0;}'
+      +'}';
+    try{ sheet.insertRule(kf, sheet.cssRules.length); }catch(e){}
+
+    var svgStr = shape.replace('FILL',colour).replace('OPAC','1');
+    var blob   = new Blob([svgStr],{type:'image/svg+xml'});
+    var url    = URL.createObjectURL(blob);
+    var img    = document.createElement('img');
+    img.src    = url;
+    img.style.cssText = 'width:'+size+'px;height:'+size+'px;display:block;opacity:'+opac+';filter:blur(0.4px);';
+    img.onload = function(){ URL.revokeObjectURL(url); };
+
+    var el = document.createElement('div');
+    el.style.cssText = [
+      'position:absolute',
+      'top:-'+Math.ceil(size)+'px',
+      'left:'+left+'vw',
+      'pointer-events:none',
+      'animation:'+kfName+' '+dur+'s -'+delay.toFixed(1)+'s linear infinite',
+      'will-change:transform,opacity',
+    ].join(';');
+    el.appendChild(img);
+    canvas.appendChild(el);
+  }
+
+  for(var i=0;i<COUNT;i++){ createSwayPetal(i); }
+
+  // Gently add more on scroll so petals feel continuous
+  var extra = false;
+  window.addEventListener('scroll',function(){
+    if(!extra && window.scrollY > 200){
+      extra = true;
+      for(var j=COUNT;j<COUNT+8;j++){ createSwayPetal(j); }
+    }
+  },{passive:true});
+})();
 
 /* ── Countdown ── */
 function updateCountdown(){
-  var target = new Date('2026-08-17T10:30:00+05:30');
-  var diff = target - new Date();
-  if(diff <= 0){
-    ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id){ document.getElementById(id).textContent='00'; });
-    return;
-  }
-  document.getElementById('cd-days').textContent  = String(Math.floor(diff/86400000)).padStart(2,'0');
-  document.getElementById('cd-hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
-  document.getElementById('cd-mins').textContent  = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-  document.getElementById('cd-secs').textContent  = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+  var target=new Date('2026-08-17T10:30:00+05:30');
+  var diff=target-new Date();
+  if(diff<=0){['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id){document.getElementById(id).textContent='00';});return;}
+  document.getElementById('cd-days').textContent  =String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cd-hours').textContent =String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  =String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  =String(Math.floor((diff%60000)/1000)).padStart(2,'0');
 }
-updateCountdown();
-setInterval(updateCountdown, 1000);
+updateCountdown();setInterval(updateCountdown,1000);
 
 /* ── Scroll reveal ── */
-var obs = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
-},{threshold:0.1});
-document.querySelectorAll('.reveal').forEach(function(r){ obs.observe(r); });
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(function(r){obs.observe(r);});
 
 /* ── Music ── */
 (function(){
-  var audio   = document.getElementById('weddingAudio');
-  var toggle  = document.getElementById('music-toggle');
-  // var overlay = document.getElementById('autoplay-overlay');
-  var label   = document.getElementById('music-label');
-  var playing = false;
-
-  audio.volume = 0.45;
-
-  function setPlaying(state){
-    playing = state;
-    toggle.textContent = state ? '⏸' : '▶';
-    label.textContent  = state ? 'Now Playing' : 'Wedding Music';
+  var audio=document.getElementById('weddingAudio');
+  var toggle=document.getElementById('music-toggle');
+  var label=document.getElementById('music-label');
+  var playing=false;
+  audio.volume=0.45;
+  function setPlaying(s){playing=s;toggle.textContent=s?'⏸':'▶';label.textContent=s?'Now Playing':'Wedding Music';}
+  function startOnInteraction(){
+    document.removeEventListener('click',startOnInteraction);
+    document.removeEventListener('touchstart',startOnInteraction);
+    audio.play().then(function(){setPlaying(true);}).catch(function(){});
   }
-function startOnInteraction(){
-  document.removeEventListener('click', startOnInteraction);
-  document.removeEventListener('touchstart', startOnInteraction);
-  audio.play().then(function(){ setPlaying(true); }).catch(function(){});
-}
-
-  toggle.addEventListener('click', function(){
-    if(playing){
-      audio.pause();
-      setPlaying(false);
-    } else {
-      audio.play().then(function(){ setPlaying(true); }).catch(function(){});
-    }
+  toggle.addEventListener('click',function(){
+    if(playing){audio.pause();setPlaying(false);}
+    else{audio.play().then(function(){setPlaying(true);}).catch(function(){});}
   });
-
-document.addEventListener('click', startOnInteraction);
-document.addEventListener('touchstart', startOnInteraction);
+  document.addEventListener('click',startOnInteraction);
+  document.addEventListener('touchstart',startOnInteraction);
 })();
 </script>
 </body>
